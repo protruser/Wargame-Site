@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Challenge 1 - Cookie</title>
+        <link rel="stylesheet" href="/static/style.css" />
+    </head>
+    <body>
+        <div class="container">
+            <h2>Challenge 1: Login</h2>
+            <p id="error" class="error" style="display: none">❌ Please check Id/Password again.</p>
+            <form action="/challenge1-login" method="POST">
+                <input type="text" name="userid" placeholder="Id" required />
+                <input type="password" name="userPassword" placeholder="Password" required />
+                <button type="submit">Login</button>
+            </form>
+        </div>
+
+        <script>
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('failed') === 'true') {
+                document.getElementById('error').style.display = 'block';
+            }
+        </script>
+    </body>
+</html>
