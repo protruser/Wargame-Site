@@ -1,14 +1,18 @@
 const express = require('express');
 const app = express();
-require('dotenv').config();
 const path = require('path');
+const dotenv = require('dotenv');
+const fs = require('fs');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-const PORT = process.env.PORT;
-const FLAG = process.env.FLAG;
+const envPath = path.resolve(__dirname, '.env');
+const envConfig = dotenv.parse(fs.readFileSync(envPath));
+
+const PORT = envConfig.PORT;
+const FLAG = envConfig.FLAG;
 
 const randomCode = Math.floor(Math.random() * 10000)
     .toString()
