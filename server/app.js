@@ -121,10 +121,9 @@ app.post('/submit-answer', (req, res) => {
 
 // user-data
 app.get('/api/statistics', (req, res) => {
-    const query = `
+    const getUserStatsQuery = `
         SELECT 
             u.user_id AS username,
-            u.total_score,
             uc.challenge_1_time,
             uc.challenge_2_time,
             uc.challenge_3_time,
@@ -134,70 +133,83 @@ app.get('/api/statistics', (req, res) => {
         JOIN user_challenges uc ON u.user_id = uc.user_id
     `;
 
-    db.all(query, [], (err, rows) => {
+    const getChallengesQuery = `
+        SELECT challenge_id, title, score
+        FROM challenges
+        WHERE challenge_id IN (1, 2, 3)
+    `;
+
+    // 1. challenge info
+    db.all(getChallengesQuery, [], (err, challengeRows) => {
         if (err) {
-            return res.status(500).json({ error: '❌ User stats retrieval failed', details: err.message });
+            return res.status(500).json({ error: '❌ Challenge static info error', details: err.message });
         }
 
-        // SORT: total_score DESC, MAX(challenge_X_time) ASC
-        rows.sort((a, b) => {
-            if (b.total_score !== a.total_score) {
-                return b.total_score - a.total_score;
-            }
-            const aMax = Math.max(a.challenge_1_time, a.challenge_2_time, a.challenge_3_time);
-            const bMax = Math.max(b.challenge_1_time, b.challenge_2_time, b.challenge_3_time);
-            return aMax - bMax;
-        });
-
-        const data = rows.map((row, index) => {
-            const {
-                username,
-                total_score,
-                challenge_1_time,
-                challenge_2_time,
-                challenge_3_time,
-                solve_success,
-                solve_fail,
-            } = row;
-
-            const points = [];
-
-            if (challenge_1_time && challenge_1_time !== 0) {
-                points.push({
-                    timestamp: new Date(challenge_1_time).toISOString(),
-                    score: Math.floor(total_score * 0.33),
-                });
-            }
-
-            if (challenge_2_time && challenge_2_time !== 0) {
-                points.push({
-                    timestamp: new Date(challenge_2_time).toISOString(),
-                    score: Math.floor(total_score * 0.66),
-                });
-            }
-
-            if (challenge_3_time && challenge_3_time !== 0) {
-                points.push({
-                    timestamp: new Date(challenge_3_time).toISOString(),
-                    score: total_score,
-                });
-            }
-
-            const total_attempts = solve_success + solve_fail;
-            const success_rate = total_attempts > 0 ? (solve_success / total_attempts) * 100 : 0;
-            const fail_rate = total_attempts > 0 ? (solve_fail / total_attempts) * 100 : 0;
-
-            return {
-                rank: index + 1,
-                username,
-                points,
-                total_score,
-                success_rate: success_rate.toFixed(2),
-                fail_rate: fail_rate.toFixed(2),
+        // challenge_id: 1~3에 해당하는 정보 저장
+        const challengeMap = {};
+        for (const row of challengeRows) {
+            challengeMap[row.challenge_id] = {
+                title: row.title,
+                score: row.score,
             };
-        });
+        }
 
-        res.json({ data });
+        // 2. user info + challenge time
+        db.all(getUserStatsQuery, [], (err, users) => {
+            if (err) {
+                return res.status(500).json({ error: '❌ user static info error', details: err.message });
+            }
+
+            const enrichedUsers = users.map((user) => {
+                const points = [];
+                let totalScore = 0;
+                let latestSolvedTime = 0;
+
+                for (let i = 1; i <= 3; i++) {
+                    const time = user[`challenge_${i}_time`];
+                    if (time && time !== 0 && challengeMap[i]) {
+                        const { title, score } = challengeMap[i];
+                        points.push({
+                            timestamp: new Date(time).toISOString(),
+                            title,
+                            score,
+                        });
+                        totalScore += score;
+                        latestSolvedTime = Math.max(latestSolvedTime, time);
+                    }
+                }
+
+                const totalAttempts = user.solve_success + user.solve_fail;
+                const successRate = totalAttempts > 0 ? (user.solve_success / totalAttempts) * 100 : 0;
+                const failRate = totalAttempts > 0 ? (user.solve_fail / totalAttempts) * 100 : 0;
+
+                return {
+                    username: user.username,
+                    points,
+                    total_score: totalScore,
+                    success_rate: successRate.toFixed(2),
+                    fail_rate: failRate.toFixed(2),
+                    latestSolvedTime,
+                };
+            });
+
+            // SORT: total_score DESC → solved first
+            enrichedUsers.sort((a, b) => {
+                if (b.total_score !== a.total_score) return b.total_score - a.total_score;
+                return a.latestSolvedTime - b.latestSolvedTime;
+            });
+
+            // rank
+            const data = enrichedUsers.map((user, index) => {
+                const { latestSolvedTime, ...rest } = user;
+                return {
+                    rank: index + 1,
+                    ...rest,
+                };
+            });
+
+            res.json({ data });
+        });
     });
 });
 
