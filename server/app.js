@@ -120,7 +120,7 @@ app.post('/submit-answer', (req, res) => {
 });
 
 // user-data
-app.get('/get-user-stats-all', (req, res) => {
+app.get('/api/statistics', (req, res) => {
     const query = `
         SELECT 
             u.user_id AS username,
