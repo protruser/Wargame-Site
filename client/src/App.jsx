@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Home from "./pages/Home";
+import Register from "./pages/Register";
 
 export default function App() {
   // 예시: 로그인 상태를 useState로 관리
@@ -15,7 +16,7 @@ export default function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        {/* 나중에 Profile, MyScore, Login, Register 페이지도 여기에 추가 */}
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );
