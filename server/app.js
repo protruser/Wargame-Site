@@ -10,18 +10,18 @@ require('./challenge1/index');
 require('./challenge2/index');
 require('./challenge3/index');
 
-// 1️⃣ server test
+// 1️. server test
 app.get('/', (req, res) => {
     res.send('✅ Server is running and DB connected!');
 });
 
-// 2️⃣ enroll user (users + user_challenges)
+// 2️. enroll user (users + user_challenges)
 app.post('/add-user', (req, res) => {
-    const { user_id, nickname, password, description } = req.body;
+    const { user_id, nickname, password } = req.body;
 
     const userInsert = `
-        INSERT INTO users (user_id, nickname, password, description, total_score)
-        VALUES (?, ?, ?, ?, 0)
+        INSERT INTO users (user_id, nickname, password, total_score)
+        VALUES (?, ?, ?, 0)
     `;
 
     const userChallengesInsert = `
@@ -29,7 +29,7 @@ app.post('/add-user', (req, res) => {
         VALUES (?)
     `;
     //execute userInsert query
-    db.run(userInsert, [user_id, nickname, password, description], (err) => {
+    db.run(userInsert, [user_id, nickname, password], (err) => {
         if (err) {
             res.status(500).json({ error: '❌ User insert failed', details: err.message });
         } else {
@@ -67,7 +67,7 @@ app.post('/submit-answer', (req, res) => {
             const timeColumn = `challenge_${challenge_id}_time`;
             const currentTime = Date.now();
 
-            // 1️⃣ Record: update the solved time + success count + total_score
+            // 1. Record: update the solved time + success count + total_score
             db.run(
                 `
                 UPDATE user_challenges
@@ -80,7 +80,7 @@ app.post('/submit-answer', (req, res) => {
                         return res.status(500).json({ error: '❌ Time update failed', details: err.message });
                     }
 
-                    // 2️⃣ total_score update
+                    // 2️. total_score update
                     db.run(
                         `
                     UPDATE users
@@ -119,58 +119,87 @@ app.post('/submit-answer', (req, res) => {
     });
 });
 
-// 4️⃣ get total_score (live)
-app.get('/get-total-score/:user_id', (req, res) => {
-    const user_id = req.params.user_id;
-
+// user-data
+app.get('/api/user-stats', (req, res) => {
     const query = `
-        SELECT total_score
-        FROM users
-        WHERE user_id = ?
+        SELECT 
+            u.user_id AS username,
+            u.total_score,
+            uc.challenge_1_time,
+            uc.challenge_2_time,
+            uc.challenge_3_time,
+            uc.solve_success,
+            uc.solve_fail
+        FROM users u
+        JOIN user_challenges uc ON u.user_id = uc.user_id
     `;
 
-    db.get(query, [user_id], (err, row) => {
+    db.all(query, [], (err, rows) => {
         if (err) {
-            res.status(500).json({ error: '❌ Total score retrieval failed', details: err.message });
-        } else {
-            const totalScore = row ? row.total_score : 0;
-            res.json({ user_id, total_score: totalScore });
+            return res.status(500).json({ error: '❌ User stats retrieval failed', details: err.message });
         }
+
+        // SORT: total_score DESC, MAX(challenge_X_time) ASC
+        rows.sort((a, b) => {
+            if (b.total_score !== a.total_score) {
+                return b.total_score - a.total_score;
+            }
+            const aMax = Math.max(a.challenge_1_time, a.challenge_2_time, a.challenge_3_time);
+            const bMax = Math.max(b.challenge_1_time, b.challenge_2_time, b.challenge_3_time);
+            return aMax - bMax;
+        });
+
+        const data = rows.map((row) => {
+            const {
+                username,
+                total_score,
+                challenge_1_time,
+                challenge_2_time,
+                challenge_3_time,
+                solve_success,
+                solve_fail,
+            } = row;
+
+            const points = [];
+
+            if (challenge_1_time && challenge_1_time !== 0) {
+                points.push({
+                    timestamp: new Date(challenge_1_time).toISOString(),
+                    score: Math.floor(total_score * 0.33),
+                });
+            }
+
+            if (challenge_2_time && challenge_2_time !== 0) {
+                points.push({
+                    timestamp: new Date(challenge_2_time).toISOString(),
+                    score: Math.floor(total_score * 0.66),
+                });
+            }
+
+            if (challenge_3_time && challenge_3_time !== 0) {
+                points.push({
+                    timestamp: new Date(challenge_3_time).toISOString(),
+                    score: total_score,
+                });
+            }
+
+            const total_attempts = solve_success + solve_fail;
+            const success_rate = total_attempts > 0 ? (solve_success / total_attempts) * 100 : 0;
+            const fail_rate = total_attempts > 0 ? (solve_fail / total_attempts) * 100 : 0;
+
+            return {
+                username,
+                points,
+                total_score,
+                success_rate: success_rate.toFixed(2),
+                fail_rate: fail_rate.toFixed(2),
+            };
+        });
+
+        res.json({ data });
     });
 });
 
 app.listen(port, () => {
     console.log(`🚀 Server running at http://localhost:${port}`);
-});
-
-// 5.성공/실패 비율 조회 api
-// address for GET REQUEST from Express server
-app.get('/get-solve-stats/:user_id', (req, res) => {
-    const user_id = req.params.user_id;
-
-    db.get(
-        `
-        SELECT solve_success, solve_fail
-        FROM user_challenges
-        WHERE user_id = ?
-    `,
-        [user_id],
-        (err, row) => {
-            if (err) {
-                res.status(500).json({ error: '❌ Solve stats retrieval failed', details: err.message });
-            } else {
-                const total = row.solve_success + row.solve_fail;
-                const successRate = total > 0 ? (row.solve_success / total) * 100 : 0;
-                const failRate = total > 0 ? (row.solve_fail / total) * 100 : 0;
-
-                res.json({
-                    user_id,
-                    solve_success: row.solve_success,
-                    solve_fail: row.solve_fail,
-                    success_rate: successRate.toFixed(2),
-                    fail_rate: failRate.toFixed(2),
-                });
-            }
-        }
-    );
 });
