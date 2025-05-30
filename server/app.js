@@ -120,7 +120,7 @@ app.post('/submit-answer', (req, res) => {
 });
 
 // user-data
-app.get('/api/user-stats', (req, res) => {
+app.get('/get-user-stats-all', (req, res) => {
     const query = `
         SELECT 
             u.user_id AS username,
@@ -149,7 +149,7 @@ app.get('/api/user-stats', (req, res) => {
             return aMax - bMax;
         });
 
-        const data = rows.map((row) => {
+        const data = rows.map((row, index) => {
             const {
                 username,
                 total_score,
@@ -188,6 +188,7 @@ app.get('/api/user-stats', (req, res) => {
             const fail_rate = total_attempts > 0 ? (solve_fail / total_attempts) * 100 : 0;
 
             return {
+                rank: index + 1,
                 username,
                 points,
                 total_score,
