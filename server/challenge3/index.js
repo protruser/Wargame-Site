@@ -10,8 +10,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const FLAG = process.env.FLAG;
 const PORT = process.env.PORT;
-// const password = crypto.randomBytes(32).toString('hex');
-const password = '123';
+const password = crypto.randomBytes(32).toString('hex');
 
 app.get('/', (req, res) => {
     res.redirect('student1.html');
