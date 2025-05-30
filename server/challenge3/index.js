@@ -1,15 +1,18 @@
 const express = require('express');
 const app = express();
-require('dotenv').config();
 const path = require('path');
 const crypto = require('crypto');
+const dotenv = require('dotenv');
+const fs = require('fs');
+
+const envPath = path.resolve(__dirname, '.env');
+const envConfig = dotenv.parse(fs.readFileSync(envPath));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-const FLAG = process.env.FLAG;
-const PORT = process.env.PORT;
+const PORT = envConfig.PORT;
 const password = crypto.randomBytes(32).toString('hex');
 
 app.get('/', (req, res) => {
