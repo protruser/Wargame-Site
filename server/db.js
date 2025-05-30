@@ -17,7 +17,6 @@ db.run(`
         user_id TEXT PRIMARY KEY,
         nickname TEXT,
         password TEXT,
-        description TEXT,
         total_score INTEGER DEFAULT 0
     )
 `);
