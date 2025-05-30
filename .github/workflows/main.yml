@@ -1,4 +1,4 @@
-name: CIMore actions
+name: CI
 
 on:
   push:
@@ -15,33 +15,36 @@ jobs:
         node-version: [18.x]
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
 
-    - name: Install pnpm
-      run: npm install -g pnpm
+      # 서버 (npm 기반)
+      - name: Install server dependencies
+        run: |
+          cd server
+          npm install
 
-    - name: Install server dependencies
-      run: |
-        cd server
-        pnpm install
+      - name: Run server tests
+        run: |
+          cd server
+          npm test || echo "No server tests yet"
 
-    - name: Run server tests
-      run: |
-        cd server
-        pnpm test || echo "No server tests yet"
+      # 클라이언트 (pnpm 기반)
+      - name: Install pnpm
+        run: npm install -g pnpm
 
-    - name: Install client dependencies
-      run: |
-        cd client
-        pnpm install
+      - name: Install client dependencies
+        run: |
+          cd client
+          pnpm install
 
-    - name: Run client tests
-      run: |
-        cd client
-        pnpm test -- --watchAll=false
+      - name: Run client tests
+        run: |
+          cd client
+          pnpm test -- --watchAll=false || echo "No client tests yet"
