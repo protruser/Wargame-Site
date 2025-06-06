@@ -1,4 +1,4 @@
-const db = require('./config/db');
+const db = require('../config/db');
 
 db.serialize(() => {
     db.run('DELETE FROM users');
@@ -43,9 +43,11 @@ db.serialize(() => {
     users.forEach((u) => insertUsers.run(...u));
     challenges.forEach((c) => insertChallenges.run(...c));
 
-    insertUsers.finalize(() => {
-        insertChallenges.finalize(() => {
-            db.close(() => console.log('🛑 DB connection closed (dummy.js)'));
-        });
-    });
+    insertUsers.finalize();
+    insertChallenges.finalize();
+
+    console.log('✅ Dummy data inserted.');
 });
+
+// Optional: close DB
+setTimeout(() => db.close(), 500);
