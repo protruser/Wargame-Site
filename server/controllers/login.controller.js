@@ -43,7 +43,7 @@ const login = async (req, res) => {
             },
         });
     } catch (err) {
-        console.error('❌ 로그인 오류:', err);
+        console.error('❌ Login Error:', err);
         return res.status(500).json({ message: 'Login failed due to a server error.' });
     }
 };
