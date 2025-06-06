@@ -10,25 +10,6 @@ function Login({ setIsLoggedIn }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const USE_FAKE_LOGIN = true;
-
-    if (USE_FAKE_LOGIN) {
-      const testEmail = "admin@test.com";
-      const testPassword = "test";
-
-      if (email === testEmail && password === testPassword) {
-        localStorage.setItem("username", "admin");
-        localStorage.setItem("email", "admin@test.com");
-
-        setIsLoggedIn(true);
-        navigate("/myscore");
-      } else {
-        setErrorMsg("Invalid email or password (fake login)");
-      }
-
-      return; // 아래 실제 요청은 건너뜀
-    }
-
     try {
       const res = await fetch("http://localhost:3000/api/login", {
         method: "POST",

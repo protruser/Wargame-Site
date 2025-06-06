@@ -18,7 +18,7 @@ const Navbar = ({ isLoggedIn }) => (
         </a>
       </div>
 
-      {isLoggedIn ? <NavbarAuth setIsLoggedIn={setIsLoggedIn} /> : <NavbarGuest />}
+      {isLoggedIn ? <NavbarAuth /> : <NavbarGuest />}
     </div>
   </nav>
 );
