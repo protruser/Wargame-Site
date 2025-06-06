@@ -24,31 +24,34 @@ const challenges = [
     },
 ];
 
-db.get('SELECT COUNT(*) AS count FROM challenges', (err, row) => {
-    if (err) {
-        console.error('❌ Challenge count check failed:', err.message);
-        return;
-    }
+db.serialize(() => {
+    db.get('SELECT COUNT(*) AS count FROM challenges', (err, row) => {
+        if (err) {
+            console.error('❌ Challenge count check failed:', err.message);
+            return;
+        }
 
-    if (row.count === 0) {
-        console.log('📦 Seeding initial challenges...');
-        challenges.forEach((ch) => {
-            db.run(
-                `INSERT INTO challenges (title, description, port, flag, score) VALUES (?, ?, ?, ?, ?)`,
-                [ch.title, ch.description, ch.port, ch.flag, ch.score],
-                (err) => {
-                    if (err) {
-                        console.error('❌ Failed to insert challenge:', err.message);
-                    } else {
-                        console.log(`✅ Inserted: ${ch.title}`);
+        if (row.count === 0) {
+            console.log('📦 Seeding initial challenges...');
+
+            challenges.forEach((ch) => {
+                db.run(
+                    `INSERT INTO challenges (title, description, port, flag, score) VALUES (?, ?, ?, ?, ?)`,
+                    [ch.title, ch.description, ch.port, ch.flag, ch.score],
+                    (err) => {
+                        if (err) {
+                            console.error('❌ Failed to insert challenge:', err.message);
+                        } else {
+                            console.log(`✅ Inserted: ${ch.title}`);
+                        }
                     }
-                }
-            );
-        });
-    } else {
-        console.log('ℹ️ Challenges already exist, skipping seeding.');
-    }
+                );
+            });
+        } else {
+            console.log('Challenges already exist, skipping seeding.');
+        }
+    });
 });
 
-// Optional: delay DB close
-setTimeout(() => db.close(), 500);
+// delay close
+setTimeout(() => db.close(), 1000);
