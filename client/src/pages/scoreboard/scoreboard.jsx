@@ -4,20 +4,19 @@ import ScoreChart from "./ScoreChart";
 import ScoreTable from "./ScoreTable";
 
 export default function Scoreboard() {
-  // 백엔드에서 받아온 전체 응답
   const [rawData, setRawData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // 백엔드가 3000번 포트에서 동작하므로 CORS 혹은 proxy 설정이 필요할 수 있음
+    // Vite 프록시를 사용하지 않으므로 절대 경로
     fetch("http://localhost:3000/api/user/statistics")
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then((json) => {
-        setRawData(json.data); // json.data 안에 배열이 들어 있음
+        setRawData(json.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -28,20 +27,39 @@ export default function Scoreboard() {
   }, []);
 
   if (loading) {
-    return <div className="p-8 text-center">Loading…</div>;
+    return (
+      <div className="pt-[60px] p-8 text-center text-gray-200">Loading…</div>
+    );
   }
   if (error) {
-    return <div className="p-8 text-center text-red-500">Error: {error}</div>;
+    return (
+      <div className="pt-[60px] p-8 text-center text-red-500">
+        Error: {error}
+      </div>
+    );
   }
 
   return (
-    <main className="pt-[60px] bg-gray-900 text-white min-h-screen">
-      <header className="py-16 text-center text-4xl">Scoreboard</header>
-      <div className="max-w-5xl mx-auto space-y-12 px-4">
-        {/* Chart 컴포넌트에 rawData(Top 10 user 객체 배열) 넘기기 */}
-        <ScoreChart data={rawData} />
-        {/* Table 컴포넌트에 rawData(Top 10 user 객체 배열) 넘기기 */}
-        <ScoreTable rows={rawData} />
+    // ① flex-none: body가 flex 여도 메인 컨테이너가 축소되지 않도록
+    // ② w-screen: 가급적 화면 전체 너비(100vw)를 차지하도록
+    // ③ ml-0 (또는 left-0) 과 같은 margin/offset을 줘서 좌측 정렬을 명시
+    <main className="pt-[60px] flex-none w-screen ml-0 bg-gray-900 text-white min-h-screen">
+      {/* ─── 페이지 상단 타이틀 ─────────────────────────────── */}
+      <header className="py-8 text-center text-3xl font-semibold">
+        Scoreboard
+      </header>
+
+      {/* ─── 콘텐츠 영역 (가로 100%) ──────────────────────── */}
+      <div className="w-full space-y-12 px-4">
+        {/* ─ 차트: 부모가 w-full 이므로 화면 전체 폭을 차지합니다 ─ */}
+        <div className="w-full">
+          <ScoreChart data={rawData} />
+        </div>
+
+        {/* ─ 테이블: 부모가 w-full 이므로 화면 전체 폭을 차지합니다 ─ */}
+        <div className="w-full">
+          <ScoreTable rows={rawData} />
+        </div>
       </div>
     </main>
   );

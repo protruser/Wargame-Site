@@ -6,7 +6,7 @@ export default function ScoreTable({ rows }) {
   const navigate = useNavigate();
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto w-full">
       <table className="w-full table-auto text-left bg-gray-800 rounded-lg">
         <thead>
           <tr className="border-b border-gray-700">
