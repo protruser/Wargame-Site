@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 function Register() {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+  const [nickname, setUsername] = useState("");
+  const [id, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -13,10 +13,10 @@ function Register() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3000/api/register", {
+      const res = await fetch("http://localhost:3000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ nickname, id, password }),
       });
 
       const data = await res.json();
@@ -41,7 +41,7 @@ function Register() {
             <label className="block mb-1 font-medium text-gray-700">Username</label>
             <input
               type="text"
-              value={username}
+              value={nickname}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter username"
               className="w-full bg-gray-200 px-4 py-2 rounded text-black"
@@ -53,7 +53,7 @@ function Register() {
             <label className="block mb-1 font-medium text-gray-700">Email</label>
             <input
               type="email"
-              value={email}
+              value={id}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter email"
               className="w-full bg-gray-200 px-4 py-2 rounded text-black"
