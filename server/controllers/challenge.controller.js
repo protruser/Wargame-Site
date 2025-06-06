@@ -24,7 +24,7 @@ exports.submitAnswer = (req, res) => {
                         (err) => {
                             if (err)
                                 return res.status(500).json({ error: 'Score update failed', details: err.message });
-                            res.json({ message: '✅ 정답입니다!' });
+                            res.json({ message: '✅ Correct!' });
                         }
                     );
                 }
@@ -32,7 +32,7 @@ exports.submitAnswer = (req, res) => {
         } else {
             db.run(`UPDATE user_challenges SET solve_fail = solve_fail + 1 WHERE user_id = ?`, [user_id], (err) => {
                 if (err) return res.status(500).json({ error: 'Fail count update failed' });
-                res.json({ message: '❌ 오답입니다!' });
+                res.json({ message: '❌ Fail' });
             });
         }
     });
