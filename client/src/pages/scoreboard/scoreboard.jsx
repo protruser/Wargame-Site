@@ -11,7 +11,7 @@ export default function Scoreboard() {
 
   useEffect(() => {
     // 백엔드가 3000번 포트에서 동작하므로 CORS 혹은 proxy 설정이 필요할 수 있음
-    fetch("http://localhost:3000/api/statistics")
+    fetch("http://localhost:3000/api/user/statistics")
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
