@@ -46,8 +46,4 @@ exports.getChallenges = async (req, res) => {
         console.error('❌ Challenge list error:', err);
         res.status(500).json({ message: 'Challenge list retrieval failed' });
     }
-<<<<<<< HEAD
 }
-=======
-};
->>>>>>> origin/main

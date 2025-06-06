@@ -112,8 +112,4 @@ exports.deleteAccount = (req, res) => {
             });
         });
     });
-<<<<<<< HEAD
-};
-=======
-};
->>>>>>> origin/main
+}

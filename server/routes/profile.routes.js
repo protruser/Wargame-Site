@@ -3,7 +3,7 @@ const router = express.Router();
 const verifyToken = require('../middlewares/authMiddleware');
 const profileController = require('../controllers/profile.controller');
 
-router.get('/', verifyToken, profileController.getProfile);
+router.post('/', verifyToken, profileController.loadProfile);
 router.put('/password', verifyToken, profileController.updatePassword);
 
 module.exports = router;
