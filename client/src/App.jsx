@@ -10,7 +10,9 @@ import MyScore from "./pages/MyScore";
 
 export default function App() {
   // 예시: 로그인 상태를 useState로 관리
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem("username") !== null;
+  });
 
   return (
     <BrowserRouter>
