@@ -6,6 +6,14 @@ function MyScore() {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
+    //fakeuser function
+    if (username === "admin") {
+      console.log("🧪 using fakeUser");
+      setUserData(fakeUser);
+      return;
+    }
+    //fakeuser function
+
     fetch("http://localhost:3000/api/statistics")
       .then((res) => res.json())
       .then((data) => {
