@@ -1,5 +1,7 @@
 const express = require('express');
 require('./config/db'); // db connection
+
+const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const challengeRoutes = require('./routes/challenge.routes');
 
@@ -17,6 +19,7 @@ require('./challenge3/index');
 // router enroll
 app.use('/api/user', userRoutes);
 app.use('/api/challenge', challengeRoutes);
+app.use('/api/auth', authRoutes);
 
 // basic route
 app.get('/', (req, res) => {

@@ -1,4 +1,3 @@
-// routes/challenge.routes.js
 const express = require('express');
 const router = express.Router();
 const challengeController = require('../controllers/challenge.controller');
