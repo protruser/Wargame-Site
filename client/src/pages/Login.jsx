@@ -3,37 +3,19 @@ import { useNavigate } from "react-router-dom";
 
 function Login({ setIsLoggedIn }) {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [id, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const USE_FAKE_LOGIN = true;
-
-    if (USE_FAKE_LOGIN) {
-      const testEmail = "admin@test.com";
-      const testPassword = "test";
-
-      if (email === testEmail && password === testPassword) {
-        localStorage.setItem("username", "admin");
-        localStorage.setItem("email", "admin@test.com");
-
-        setIsLoggedIn(true);
-        navigate("/myscore");
-      } else {
-        setErrorMsg("Invalid email or password (fake login)");
-      }
-
-      return; // 아래 실제 요청은 건너뜀
-    }
-
+  
     try {
-      const res = await fetch("http://localhost:3000/api/login", {
+      const res = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ id, password }),
       });
 
       const data = await res.json();
@@ -41,10 +23,10 @@ function Login({ setIsLoggedIn }) {
       if (!res.ok) {
         setErrorMsg(data.message || "Login failed.");
       } else {
-        localStorage.setItem("username", data.username || data.email);
-        localStorage.setItem("email", data.email);
+        localStorage.setItem("username", data.username || data.id);
+        localStorage.setItem("email", data.id);
         setIsLoggedIn(true);
-        navigate("/myscore");
+        navigate("/");
       }
     } catch (error) {
       setErrorMsg("Server error. Please try again later.");
@@ -61,7 +43,7 @@ function Login({ setIsLoggedIn }) {
             <label className="block mb-1 font-medium text-gray-700">Email</label>
             <input
               type="email"
-              value={email}
+              value={id}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter email"
               className="w-full bg-gray-200 px-4 py-2 rounded text-black"

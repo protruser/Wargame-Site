@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 
 function Profile() {
-  const [username, setUsername] = useState("loading...");
-  const [email, setEmail] = useState("loading...");
-  const [currentPassword, setCurrentPassword] = useState("");
+  const [nickname, setUsername] = useState("loading...");
+  const [id, setEmail] = useState("loading...");
+  const [password, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -15,8 +15,8 @@ function Profile() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setUsername(data.username);
-        setEmail(data.email);
+        setUsername(data.nickname);
+        setEmail(data.id);
       });
   }, []);
 
@@ -35,7 +35,7 @@ function Profile() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, currentPassword, newPassword }),
+        body: JSON.stringify({ id, password, newPassword }),
       });
 
       const data = await res.json();
@@ -63,7 +63,7 @@ function Profile() {
             <label className="block mb-1 font-medium text-gray-700">Username</label>
             <input
               type="text"
-              value={username}
+              value={nickname}
               disabled
               className="w-full bg-gray-200 px-4 py-2 rounded text-black cursor-not-allowed"
             />
@@ -74,7 +74,7 @@ function Profile() {
             <label className="block mb-1 font-medium text-gray-700">Email</label>
             <input
               type="email"
-              value={email}
+              value={id}
               disabled
               className="w-full bg-gray-200 px-4 py-2 rounded text-black cursor-not-allowed"
             />
@@ -85,7 +85,7 @@ function Profile() {
             <label className="block mb-1 font-medium text-gray-700">Current Password</label>
             <input
               type="password"
-              value={currentPassword}
+              value={password}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="Enter current password"
               className="w-full bg-gray-200 px-4 py-2 rounded text-black"

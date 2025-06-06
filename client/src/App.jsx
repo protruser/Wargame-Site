@@ -10,23 +10,19 @@ import MyScore from "./pages/MyScore";
 import Scoreboard from "./pages/scoreboard/Scoreboard";
 
 export default function App() {
-  // 예시: 로그인 상태를 useState로 관리
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return localStorage.getItem("username") !== null;
+    const nickname = localStorage.getItem("nickname");
+    return nickname !== null;
   });
 
   return (
     <BrowserRouter>
-      {/* 네비게이션은 항상 보이도록 App 레벨에서 렌더링 */}
-      <Navbar isLoggedIn={isLoggedIn} />
+      <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
 
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
-        <Route
-          path="/login"
-          element={<Login setIsLoggedIn={setIsLoggedIn} />}
-        />
+        <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/myscore" element={<MyScore />} />
         <Route path="/scoreboard" element={<Scoreboard />} />

@@ -2,25 +2,18 @@ import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
 
 function MyScore() {
-  const username = localStorage.getItem("username");
+  const nickname = localStorage.getItem("nickname");
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    //fakeuser function
-    if (username === "admin") {
-      console.log("🧪 using fakeUser");
-      setUserData(fakeUser);
-      return;
-    }
-    //fakeuser function
 
-    fetch("http://localhost:3000/api/statistics")
+    fetch("http://localhost:3000/api/user/statistics")
       .then((res) => res.json())
       .then((data) => {
-        const me = data.data.find((u) => u.username === username);
+        const me = data.data.find((u) => u.nickname === nickname);
         setUserData(me);
       });
-  }, [username]);
+  }, [nickname]);
 
   if (!userData) return <p className="text-center mt-10">Loading...</p>;
 
@@ -28,7 +21,7 @@ function MyScore() {
 
   const chartData = {
     series: [{
-      name: username,
+      name: nickname,
       data: points.map((p, i) => {
         const sum = points.slice(0, i + 1).reduce((acc, cur) => acc + cur.score, 0);
         return { x: new Date(p.timestamp), y: sum };
@@ -43,7 +36,7 @@ function MyScore() {
 
   return (
     <div className="p-8">
-      <h2 className="text-2xl font-semibold text-center mb-6">{username}</h2>
+      <h2 className="text-2xl font-semibold text-center mb-6">{nickname}</h2>
       <p className="text-center mb-4">
         <span className="font-bold">{rank}위</span> / {total_score}점
       </p>
