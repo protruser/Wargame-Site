@@ -1,6 +1,7 @@
 // app.js
 const express = require('express');
 require('./config/db'); // DB 연결 및 테이블 생성 실행
+const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const challengeRoutes = require('./routes/challenge.routes');
 
@@ -16,6 +17,7 @@ require('./challenge2/index');
 require('./challenge3/index');
 
 // 라우터 등록
+app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/challenge', challengeRoutes);
 
