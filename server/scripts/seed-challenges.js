@@ -1,4 +1,4 @@
-const db = require('./config/db');
+const db = require('../config/db');
 
 const challenges = [
     {
@@ -24,14 +24,18 @@ const challenges = [
     },
 ];
 
-challenges.forEach((ch) => {
-    db.run(`INSERT OR IGNORE INTO challenges (title, description, port, flag, score) values (?,?,?,?,?)`, [
-        ch.title,
-        ch.description,
-        ch.port,
-        ch.flag,
-        ch.score,
-    ]);
+challenges.forEach((ch, i) => {
+    db.run(
+        `INSERT OR IGNORE INTO challenges (title, description, port, flag, score) values (?, ?, ?, ?, ?)`,
+        [ch.title, ch.description, ch.port, ch.flag, ch.score],
+        (err) => {
+            if (err) console.error(`❌ Failed to insert challenge #${i + 1}:`, err.message);
+            else console.log(`✅ Challenge "${ch.title}" inserted (or already exists)`);
+        }
+    );
 });
 
-db.close();
+// delay to allow all inserts to finish before closing DB
+setTimeout(() => {
+    db.close(() => console.log('🛑 DB connection closed'));
+}, 500);
