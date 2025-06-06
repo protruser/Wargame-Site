@@ -4,6 +4,7 @@ require('./config/db'); // db connection
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const challengeRoutes = require('./routes/challenge.routes');
+const loginRoutes = require('./routes/login.routes');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -20,6 +21,7 @@ require('./challenge3/index');
 app.use('/api/user', userRoutes);
 app.use('/api/challenge', challengeRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/auth', loginRoutes);
 
 // basic route
 app.get('/', (req, res) => {
