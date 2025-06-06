@@ -1,4 +1,5 @@
 const challengeService = require('../services/challenge.service');
+const db = require('../config/db');
 
 exports.submitAnswer = async (req, res) => {
     const { challenge_id, submitted_flag } = req.body;
@@ -10,14 +11,10 @@ exports.submitAnswer = async (req, res) => {
         const timeColumn = `challenge_${challenge_id}_time`;
 
         const user = await new Promise((resolve, reject) => {
-            db.get(
-                `SELECT ${timeColumn} FROM user_challenges WHERE user_id = ?`,
-                [user_id],
-                (err, row) => {
-                    if (err) reject(err);
-                    else resolve(row);
-                }
-            );
+            db.get(`SELECT ${timeColumn} FROM user_challenges WHERE user_id = ?`, [user_id], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
         });
 
         if (user && user[timeColumn] !== 0) {
@@ -38,5 +35,15 @@ exports.submitAnswer = async (req, res) => {
         }
     } catch (err) {
         res.status(500).json({ error: 'Internal Server Error', details: err.message });
+    }
+};
+
+exports.getChallenges = async (req, res) => {
+    try {
+        const challenges = await challengeService.getAllChallenges();
+        res.status(200).json(challenges);
+    } catch (err) {
+        console.error('❌ Challenge list error:', err);
+        res.status(500).json({ message: 'Challenge list retrieval failed' });
     }
 };

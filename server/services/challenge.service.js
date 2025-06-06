@@ -37,13 +37,23 @@ exports.updateSuccess = (user_id, challenge_id, score, timestamp) => {
 
 exports.updateFail = (user_id) => {
     return new Promise((resolve, reject) => {
-        db.run(
-            `UPDATE user_challenges SET solve_fail = solve_fail + 1 WHERE user_id = ?`,
-            [user_id],
-            function (err) {
-                if (err) reject(err);
-                else resolve();
+        db.run(`UPDATE user_challenges SET solve_fail = solve_fail + 1 WHERE user_id = ?`, [user_id], function (err) {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
+};
+
+exports.getAllChallenges = () => {
+    const db = require('../config/db');
+
+    return new Promise((resolve, reject) => {
+        db.all('SELECT challenge_id, title, description, port, score FROM challenges', [], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
             }
-        );
+        });
     });
 };
