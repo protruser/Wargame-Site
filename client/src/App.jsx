@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import MyScore from "./pages/MyScore";
+import Scoreboard from "./pages/scoreboard/Scoreboard";
 
 export default function App() {
   // 예시: 로그인 상태를 useState로 관리
@@ -20,10 +21,13 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+        <Route
+          path="/login"
+          element={<Login setIsLoggedIn={setIsLoggedIn} />}
+        />
         <Route path="/profile" element={<Profile />} />
         <Route path="/myscore" element={<MyScore />} />
-
+        <Route path="/scoreboard" element={<Scoreboard />} />
       </Routes>
     </BrowserRouter>
   );
