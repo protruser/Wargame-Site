@@ -1,39 +1,22 @@
-const db = require('../config/db');
+const challengeService = require('../services/challenge.service');
 
-exports.submitAnswer = (req, res) => {
-    const { user_id, challenge_id, submitted_flag } = req.body;
+exports.submitAnswer = async (req, res) => {
+    const { challenge_id, submitted_flag } = req.body;
+    const user_id = req.user.user_id;
+    const currentTime = Date.now();
 
-    db.get(`SELECT flag, score FROM challenges WHERE challenge_id = ?`, [challenge_id], (err, challenge) => {
-        if (err || !challenge) {
-            return res.status(500).json({ error: 'Challenge lookup failed' });
-        }
+    try {
+        const challenge = await challengeService.getChallenge(challenge_id);
+        if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
 
         if (submitted_flag === challenge.flag) {
-            const timeColumn = `challenge_${challenge_id}_time`;
-            const currentTime = Date.now();
-
-            db.run(
-                `UPDATE user_challenges SET ${timeColumn} = ?, solve_success = solve_success + 1 WHERE user_id = ?`,
-                [currentTime, user_id],
-                (err) => {
-                    if (err) return res.status(500).json({ error: 'Time update failed', details: err.message });
-
-                    db.run(
-                        `UPDATE users SET total_score = total_score + ? WHERE user_id = ?`,
-                        [challenge.score, user_id],
-                        (err) => {
-                            if (err)
-                                return res.status(500).json({ error: 'Score update failed', details: err.message });
-                            res.json({ message: '✅ Correct!' });
-                        }
-                    );
-                }
-            );
+            await challengeService.updateSuccess(user_id, challenge_id, challenge.score, currentTime);
+            res.json({ message: '✅ Correct!' });
         } else {
-            db.run(`UPDATE user_challenges SET solve_fail = solve_fail + 1 WHERE user_id = ?`, [user_id], (err) => {
-                if (err) return res.status(500).json({ error: 'Fail count update failed' });
-                res.json({ message: '❌ Fail' });
-            });
+            await challengeService.updateFail(user_id);
+            res.json({ message: '❌ Fail' });
         }
-    });
+    } catch (err) {
+        res.status(500).json({ error: 'Internal Server Error', details: err.message });
+    }
 };
