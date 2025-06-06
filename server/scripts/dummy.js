@@ -1,4 +1,4 @@
-const db = require('./db');
+const db = require('../config/db');
 
 db.serialize(() => {
     db.run('DELETE FROM users');
@@ -45,4 +45,9 @@ db.serialize(() => {
 
     insertUsers.finalize();
     insertChallenges.finalize();
+
+    console.log('✅ Dummy data inserted.');
 });
+
+// Optional: close DB
+setTimeout(() => db.close(), 500);
