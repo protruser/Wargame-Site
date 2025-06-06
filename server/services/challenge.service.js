@@ -47,3 +47,17 @@ exports.updateFail = (user_id) => {
         );
     });
 };
+
+exports.getAllChallenges = () => {
+    const db = require('../config/db');
+
+    return new Promise((resolve, reject) => {
+        db.all('SELECT challenge_id, title, description, port, score FROM challenges', [], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
+};

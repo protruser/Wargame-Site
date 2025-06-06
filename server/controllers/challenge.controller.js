@@ -40,3 +40,13 @@ exports.submitAnswer = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error', details: err.message });
     }
 };
+
+exports.getChallenges = async (req, res) => {
+    try {
+        const challenges = await challengeService.getAllChallenges();
+        res.status(200).json(challenges);
+    } catch (err) {
+        console.error('❌ Challenge list error:', err);
+        res.status(500).json({ message: 'Challenge list retrieval failed' });
+    }
+}
