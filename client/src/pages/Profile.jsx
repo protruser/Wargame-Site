@@ -35,7 +35,7 @@ function Profile() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ currentPassword, newPassword }),
+        body: JSON.stringify({ email, currentPassword, newPassword }),
       });
 
       const data = await res.json();

@@ -17,7 +17,6 @@ db.run(`
         user_id TEXT PRIMARY KEY,
         nickname TEXT,
         password TEXT,
-        description TEXT,
         total_score INTEGER DEFAULT 0
     )
 `);
@@ -29,7 +28,7 @@ db.run(`
         challenge_id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         description TEXT,
-        url TEXT,
+        port TEXT,
         flag TEXT,
         score INTEGER 
     )
@@ -47,6 +46,5 @@ db.run(`
         FOREIGN KEY (user_id) REFERENCES users(user_id)
     )
 `);
-
 
 module.exports = db;

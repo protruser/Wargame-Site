@@ -1,20 +1,23 @@
 const express = require('express');
 const app = express();
-require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const dotenv = require('dotenv');
+
+const envPath = path.resolve(__dirname, '.env');
+const envConfig = dotenv.parse(fs.readFileSync(envPath));
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
-const PORT = process.env.PORT;
-const FLAG = process.env.FLAG;
-const ADMIN_SECRET = process.env.COOKIE;
-const ID = process.env.ID;
-const PASSWORD = process.env.PASSWORD;
+const PORT = envConfig.PORT;
+const FLAG = envConfig.FLAG;
+const ADMIN_SECRET = envConfig.COOKIE;
+const ID = envConfig.ID;
+const PASSWORD = envConfig.PASSWORD;
 
 app.get('/', (req, res) => {
     const token = req.cookies.sessionId;
