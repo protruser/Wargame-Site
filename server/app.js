@@ -1,35 +1,73 @@
-// app.js
 const express = require('express');
-require('./config/db'); // DB 연결 및 테이블 생성 실행
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+require('./config/db'); // Database connection
+
+const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const challengeRoutes = require('./routes/challenge.routes');
+const loginRoutes = require('./routes/login.routes');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// 미들웨어
-app.use(express.json()); // JSON 요청 파싱
+// ✅ Define allowed origins for CORS
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://localhost:3003',
+];
 
-// 워게임 문제 서비스 실행 (예: 포트별 문제용 미니 서버)
+// ✅ CORS middleware with dynamic origin checking
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        credentials: true,
+    })
+);
+
+// Global middlewares
+app.use(helmet()); // Set secure HTTP headers
+app.use(morgan('dev')); // Log incoming requests
+app.use(express.json()); // Parse JSON request bodies
+app.use(express.urlencoded({ extended: true })); // Parse form-encoded request bodies
+
+// Run wargame challenge servers (each on its own port)
 require('./challenge1/index');
 require('./challenge2/index');
 require('./challenge3/index');
 
-// 라우터 등록
+// Register route handlers
 app.use('/api/user', userRoutes);
 app.use('/api/challenge', challengeRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/auth', loginRoutes);
 
-// 기본 라우팅
+// Basic health check route
 app.get('/', (req, res) => {
     res.send('✅ Server is running and DB connected!');
 });
 
-// 에러 핸들링 (선택)
+// Handle unmatched routes (404)
 app.use((req, res) => {
     res.status(404).json({ error: 'Not Found' });
 });
 
-// 서버 실행
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error('❌ Server error:', err.stack);
+    res.status(500).json({ error: 'Internal Server Error' });
+});
+
+// Start the server
 app.listen(port, () => {
     console.log(`🚀 Server running at http://localhost:${port}`);
 });

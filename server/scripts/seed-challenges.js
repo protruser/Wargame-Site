@@ -4,38 +4,54 @@ const challenges = [
     {
         title: 'Cookie',
         description: 'Change cookie to admin. ID/PW: guest/guest123',
-        port: '3001',
+        port: '9001',
         flag: 'FLAG{Congrats_You_Are_Admin}',
         score: 100,
     },
     {
         title: 'Pin Code',
         description: 'Lost my authentication number',
-        port: '3002',
+        port: '9002',
         flag: 'FLAG{pIN_Code_bruteForced_OoO}',
         score: 150,
     },
     {
         title: 'My Grade',
         description: 'Want to know my grade earlier than the date, June 25',
-        port: '3003',
+        port: '9003',
         flag: 'FLAG{Congrats_Here_LaBORatorY_TICket}',
         score: 200,
     },
 ];
 
-challenges.forEach((ch, i) => {
-    db.run(
-        `INSERT OR IGNORE INTO challenges (title, description, port, flag, score) values (?, ?, ?, ?, ?)`,
-        [ch.title, ch.description, ch.port, ch.flag, ch.score],
-        (err) => {
-            if (err) console.error(`❌ Failed to insert challenge #${i + 1}:`, err.message);
-            else console.log(`✅ Challenge "${ch.title}" inserted (or already exists)`);
+db.serialize(() => {
+    db.get('SELECT COUNT(*) AS count FROM challenges', (err, row) => {
+        if (err) {
+            console.error('❌ Challenge count check failed:', err.message);
+            return;
         }
-    );
+
+        if (row.count === 0) {
+            console.log('📦 Seeding initial challenges...');
+
+            challenges.forEach((ch) => {
+                db.run(
+                    `INSERT INTO challenges (title, description, port, flag, score) VALUES (?, ?, ?, ?, ?)`,
+                    [ch.title, ch.description, ch.port, ch.flag, ch.score],
+                    (err) => {
+                        if (err) {
+                            console.error('❌ Failed to insert challenge:', err.message);
+                        } else {
+                            console.log(`✅ Inserted: ${ch.title}`);
+                        }
+                    }
+                );
+            });
+        } else {
+            console.log('Challenges already exist, skipping seeding.');
+        }
+    });
 });
 
-// delay to allow all inserts to finish before closing DB
-setTimeout(() => {
-    db.close(() => console.log('🛑 DB connection closed'));
-}, 500);
+// delay close
+setTimeout(() => db.close(), 1000);
