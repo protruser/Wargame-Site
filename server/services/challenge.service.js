@@ -6,7 +6,7 @@ exports.getChallenge = (id) => {
             if (err) {
                 reject(err);
             } else {
-                resolve(row);  // row가 null이면 controller에서 'Challenge Not Found'
+                resolve(row);
             }
         });
     });
