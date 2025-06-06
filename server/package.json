@@ -6,7 +6,8 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node app.js",
         "seed": "node scripts/seed-challenges.js",
-        "dummy": "node scripts/dummy.js"
+        "dummy": "node scripts/dummy.js",
+        "wargame": "npm install sqlite3 && npm run seed && npm run dummy && npm start"
     },
     "keywords": [],
     "author": "",
