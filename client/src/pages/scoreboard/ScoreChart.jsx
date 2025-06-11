@@ -1,4 +1,3 @@
-// src/pages/scoreboard/ScoreChart.jsx
 import React from "react";
 import {
   LineChart,
@@ -11,29 +10,42 @@ import {
 } from "recharts";
 
 export default function ScoreChart({ data }) {
-  // 1) timestamp들을 모두 모아서 정렬
+  // 1) Top 10 필터
+  const top10 = data
+    .filter((u) => u.rank >= 1 && u.rank <= 10)
+    .sort((a, b) => a.rank - b.rank);
+
+  // 2) 모든 타임스탬프 수집 및 정렬
   const allTimestamps = Array.from(
-    new Set(data.flatMap((user) => user.points.map((p) => p.timestamp)))
+    new Set(top10.flatMap((u) => u.points.map((p) => p.timestamp)))
   ).sort((a, b) => new Date(a) - new Date(b));
 
-  // 2) 사용자별로 timestamp→score 맵 생성
-  const userScoreMap = {};
-  data.forEach((user) => {
-    userScoreMap[user.username] = Object.fromEntries(
-      user.points.map((p) => [p.timestamp, p.score])
+  // 3) 유저별 누적 점수 맵 생성
+  const userCumMap = {};
+  top10.forEach((user) => {
+    // iso 문자열 정렬
+    const sorted = [...user.points].sort(
+      (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
     );
+    let cum = 0;
+    const map = {};
+    sorted.forEach((p) => {
+      cum += p.score;
+      map[p.timestamp] = cum;
+    });
+    userCumMap[user.username] = map;
   });
 
-  // 3) Recharts에 넘길 데이터 형태로 가공
+  // 4) 차트용 데이터 생성
   const chartData = allTimestamps.map((ts) => {
     const row = { timestamp: ts };
-    data.forEach((user) => {
-      row[user.username] = userScoreMap[user.username][ts] ?? null;
+    top10.forEach((user) => {
+      row[user.username] = userCumMap[user.username][ts] ?? null;
     });
     return row;
   });
 
-  // 색상 팔레트 (최대 10명 커버)
+  // 5) 색상 팔레트
   const colors = [
     "#A855F7",
     "#10B981",
@@ -52,12 +64,16 @@ export default function ScoreChart({ data }) {
       <h3 className="text-2xl font-semibold text-white mb-6 text-center">
         Top 10 Users Over Time
       </h3>
-
       <div className="w-full h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
+          <LineChart
+            data={chartData}
+            margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+          >
             <XAxis
               dataKey="timestamp"
+              type="category"
+              interval={0}
               tickFormatter={(ts) =>
                 new Date(ts).toLocaleDateString("en-US", {
                   month: "short",
@@ -66,7 +82,11 @@ export default function ScoreChart({ data }) {
               }
               stroke="#DDD"
             />
-            <YAxis stroke="#DDD" />
+            <YAxis
+              stroke="#DDD"
+              domain={[0, "dataMax + 10"]}
+              allowDataOverflow={true}
+            />
             <Tooltip
               contentStyle={{ backgroundColor: "#1F2937", border: "none" }}
               itemStyle={{ color: "#FFF" }}
@@ -79,15 +99,15 @@ export default function ScoreChart({ data }) {
               }
             />
             <Legend wrapperStyle={{ color: "#FFF" }} />
-            {data.map((user, idx) => (
+            {top10.map((user, idx) => (
               <Line
                 key={user.username}
                 type="monotone"
                 dataKey={user.username}
-                stroke={colors[idx % colors.length]}
+                stroke={colors[idx]}
                 dot={false}
                 strokeWidth={2}
-                connectNulls={true}
+                connectNulls
               />
             ))}
           </LineChart>
