@@ -24,7 +24,7 @@ exports.addUser = (req, res) => {
 
 exports.getStatistics = (req, res) => {
     const getUserStatsQuery = `
-    SELECT u.user_id AS username, uc.challenge_1_time, uc.challenge_2_time, uc.challenge_3_time,
+    SELECT u.nickname AS username, uc.challenge_1_time, uc.challenge_2_time, uc.challenge_3_time,
            uc.solve_success, uc.solve_fail
     FROM users u
     JOIN user_challenges uc ON u.user_id = uc.user_id
