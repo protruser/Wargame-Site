@@ -26,7 +26,11 @@ const login = async (req, res) => {
             return res.status(401).json({ message: 'Password is not valid.' });
         }
 
-        const token = generateToken({ user_id: user.user_id });
+        const token = generateToken({
+            user_id: user.user_id,
+            nickname: user.nickname,
+            email: user.email,
+        });
 
         return res.status(200).json({
             message: 'login success',
