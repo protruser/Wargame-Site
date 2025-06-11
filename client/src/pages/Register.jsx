@@ -73,7 +73,7 @@ function Register() {
               className="w-full bg-gray-200 px-4 py-2 rounded text-black"
             />
             <p className="text-sm text-gray-500 mt-1">
-              At least 8 characters, incl. uppercase, lowercase, and special character
+              At least 8 characters, include number, uppercase, lowercase, and special character
             </p>
           </div>
 

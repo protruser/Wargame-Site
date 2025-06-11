@@ -26,6 +26,7 @@ function Login({ setIsLoggedIn }) {
         // JWT 토큰과 닉네임 저장
         localStorage.setItem("token", data.token);
         localStorage.setItem("nickname", data.user.nickname);
+        localStorage.setItem("userId", data.id);
         setIsLoggedIn(true);
         navigate("/");
       }

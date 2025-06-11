@@ -1,15 +1,15 @@
-// src/pages/Profile.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import authFetch from "../utils/authFetch";
 
 function Profile({ setIsLoggedIn }) {
-  const [nickname, setNickname] = useState("loading...");
+  const [nickname, setUsername] = useState("loading...");
   const [id, setEmail] = useState("loading...");
-  const [currentPassword, setCurrentPassword] = useState("");
+  const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,16 +19,16 @@ function Profile({ setIsLoggedIn }) {
         return res.json();
       })
       .then((data) => {
-        setNickname(data.nickname);
+        setUsername(data.nickname);
         setEmail(data.id);
       })
       .catch(() => {
-        // 인증 실패 시
         localStorage.clear();
         setIsLoggedIn(false);
         navigate("/login");
       });
   }, [navigate, setIsLoggedIn]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,9 +44,9 @@ function Profile({ setIsLoggedIn }) {
       const res = await authFetch(
         "http://localhost:3000/api/profile/password",
         {
-          method: "POST",
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id, password: currentPassword, newPassword }),
+          body: JSON.stringify({ id, password, newPassword }),
         }
       );
 
@@ -56,7 +56,7 @@ function Profile({ setIsLoggedIn }) {
         setError(data.message || "Password update failed.");
       } else {
         setSuccess("Password updated successfully.");
-        setCurrentPassword("");
+        setPassword("");
         setNewPassword("");
       }
     } catch (err) {
@@ -67,6 +67,28 @@ function Profile({ setIsLoggedIn }) {
       } else {
         setError("Server error. Try again later.");
       }
+    }
+  };
+
+  const handleDelete = async () => {
+    setError("");
+    setSuccess("");
+
+    if (!window.confirm("Are you sure you want to delete your account?")) return;
+
+    try {
+      const res = await authFetch(`http://localhost:3000/api/user_id/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.message || "Account deletion failed.");
+      } else {
+        setShowModal(true); // 탈퇴 성공 → 모달 표시
+      }
+    } catch (err) {
+      setError("Server error. Try again later.");
     }
   };
 
@@ -105,8 +127,8 @@ function Profile({ setIsLoggedIn }) {
             </label>
             <input
               type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter current password"
               className="w-full bg-gray-200 px-4 py-2 rounded text-black"
             />
@@ -125,17 +147,42 @@ function Profile({ setIsLoggedIn }) {
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}
           {success && <p className="text-green-600 text-sm">{success}</p>}
-          <div className="flex justify-end">
+          <div className="flex justify-between items-center">
             <button
               type="submit"
               className="bg-gray-300 text-black px-6 py-2 rounded hover:bg-gray-400"
             >
               Update Password
             </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600"
+            >
+              Delete Account
+            </button>
           </div>
         </form>
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-md max-w-sm w-full">
+            <h2 className="text-xl font-semibold mb-4 text-black">Account Deleted</h2>
+            <p className="text-gray-700 mb-4">Your account has been successfully deleted.</p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowModal(false)}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
 export default Profile;
