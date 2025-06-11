@@ -19,7 +19,8 @@ exports.loadProfile = async (req, res) => {
 };
 
 exports.updatePassword = async (req, res) => {
-    const { id, password, newPassword } = req.body;
+    const { password, newPassword } = req.body;
+    const id = req.user.user_id;
     console.log(id);
 
     try {
