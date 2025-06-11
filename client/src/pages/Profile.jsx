@@ -13,14 +13,7 @@ function Profile({ setIsLoggedIn }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 여기서 POST 방식으로 프로필 요청
-    authFetch("http://localhost:3000/api/profile", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId: localStorage.getItem("userId") }) // 예: localStorage에서 userId 가져옴
-    })
+    authFetch("http://localhost:3000/api/profile")
       .then((res) => {
         if (res.status === 401) throw new Error("Unauthorized");
         return res.json();
@@ -36,6 +29,7 @@ function Profile({ setIsLoggedIn }) {
       });
   }, [navigate, setIsLoggedIn]);
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -50,7 +44,7 @@ function Profile({ setIsLoggedIn }) {
       const res = await authFetch(
         "http://localhost:3000/api/profile/password",
         {
-          method: "POST",
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id, password, newPassword }),
         }
@@ -83,7 +77,7 @@ function Profile({ setIsLoggedIn }) {
     if (!window.confirm("Are you sure you want to delete your account?")) return;
 
     try {
-      const res = await authFetch(`http://localhost:3000/api/users/${id}`, {
+      const res = await authFetch(`http://localhost:3000/api/user_id/${id}`, {
         method: "DELETE",
       });
 
