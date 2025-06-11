@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "jest",
         "start": "node app.js",
         "seed": "node scripts/seed-challenges.js",
         "dummy": "node scripts/dummy.js",
@@ -23,5 +23,9 @@
         "morgan": "^1.10.0",
         "server": "file:",
         "sqlite3": "^5.1.7"
+    },
+    "devDependencies": {
+        "jest": "^30.0.0",
+        "supertest": "^7.1.1"
     }
 }
