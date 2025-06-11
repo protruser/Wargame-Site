@@ -1,5 +1,4 @@
-// 수정
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Home from "./pages/home/Home";
@@ -10,9 +9,20 @@ import MyScore from "./pages/MyScore";
 import Scoreboard from "./pages/scoreboard/Scoreboard";
 
 export default function App() {
+
   const [isLoggedIn, setIsLoggedIn] = useState(() =>
     Boolean(localStorage.getItem("token"))
   );
+
+
+  useEffect(() => {
+    const syncLoginStatus = () => {
+      setIsLoggedIn(Boolean(localStorage.getItem("token")));
+    };
+
+    window.addEventListener("storage", syncLoginStatus);
+    return () => window.removeEventListener("storage", syncLoginStatus);
+  }, []);
 
   return (
     <BrowserRouter>
@@ -30,7 +40,7 @@ export default function App() {
             isLoggedIn ? (
               <Profile setIsLoggedIn={setIsLoggedIn} />
             ) : (
-              <Navigate to="/login" replace />
+              <Navigate to="/" replace />
             )
           }
         />
