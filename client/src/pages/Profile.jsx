@@ -77,7 +77,7 @@ function Profile({ setIsLoggedIn }) {
     if (!window.confirm("Are you sure you want to delete your account?")) return;
 
     try {
-      const res = await authFetch(`http://localhost:3000/api/user_id/${id}`, {
+      const res = await authFetch(`http://localhost:3000/api/user/${id}`, {
         method: "DELETE",
       });
 
@@ -172,7 +172,11 @@ function Profile({ setIsLoggedIn }) {
             <p className="text-gray-700 mb-4">Your account has been successfully deleted.</p>
             <div className="flex justify-end">
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  localStorage.clear();
+                  navigate("/");  
+                  setIsLoggedIn(false); 
+                }}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
                 Close
