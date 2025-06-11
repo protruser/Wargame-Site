@@ -8,17 +8,41 @@ function Profile() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  useEffect(() => {
-    fetch("http://localhost:3000/api/profile", {
-      method: "GET",
-      credentials: "include",
+ useEffect(() => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    // 토큰 없으면 로그인 페이지로
+    window.location.href = "/login";
+    return;
+  }
+
+  fetch("http://localhost:3000/api/profile", {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          // 인증 실패 시 로그아웃 처리
+          localStorage.clear();
+          window.location.href = "/login";
+        }
+        throw new Error("Unauthorized");
+      }
+      return res.json();
     })
-      .then((res) => res.json())
-      .then((data) => {
-        setUsername(data.nickname);
-        setEmail(data.id);
-      });
-  }, []);
+    .then((data) => {
+      setUsername(data.nickname);
+      setEmail(data.id);
+    })
+    .catch((err) => {
+      console.error("Profile fetch error:", err);
+    });
+}, []);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();

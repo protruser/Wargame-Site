@@ -23,8 +23,9 @@ function Login({ setIsLoggedIn }) {
       if (!res.ok) {
         setErrorMsg(data.message || "Login failed.");
       } else {
-        localStorage.setItem("username", data.username || data.id);
-        localStorage.setItem("email", data.id);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("username", data.user.nickname);
+        localStorage.setItem("email", data.user.id);
         setIsLoggedIn(true);
         navigate("/");
       }
