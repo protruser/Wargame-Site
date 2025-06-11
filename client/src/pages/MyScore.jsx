@@ -9,12 +9,8 @@ function MyScore() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!token) {
-      navigate("/login");
-      return;
-    }
 
-    fetch("http://localhost:3000/api/user/statistics", {
+    fetch("http://localhost:3000/api/my_score", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -118,3 +114,4 @@ function MyScore() {
 }
 
 export default MyScore;
+
