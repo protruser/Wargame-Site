@@ -9,7 +9,7 @@ const userRoutes = require('./routes/user.routes');
 const challengeRoutes = require('./routes/challenge.routes');
 const loginRoutes = require('./routes/login.routes');
 const profileRoutes = require('./routes/profile.routes');
-
+const myScoreRoutes = require("./routes/myscore.routes");
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -52,6 +52,7 @@ app.use('/api/challenge', challengeRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/auth', loginRoutes);
 app.use('/api/profile', profileRoutes);
+app.use("/api/my_score", myScoreRoutes);
 
 // Basic health check route
 app.get('/', (req, res) => {
