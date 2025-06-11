@@ -7,13 +7,12 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import MyScore from "./pages/MyScore";
 import Scoreboard from "./pages/scoreboard/Scoreboard";
+import Challenges from "./pages/challenges/Challenges";
 
 export default function App() {
-
   const [isLoggedIn, setIsLoggedIn] = useState(() =>
     Boolean(localStorage.getItem("token"))
   );
-
 
   useEffect(() => {
     const syncLoginStatus = () => {
@@ -46,6 +45,7 @@ export default function App() {
         />
         <Route path="/myscore" element={<MyScore />} />
         <Route path="/scoreboard" element={<Scoreboard />} />
+        <Route path="/challenges" element={<Challenges />} />
       </Routes>
     </BrowserRouter>
   );
