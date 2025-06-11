@@ -46,4 +46,30 @@ exports.getChallenges = async (req, res) => {
         console.error('❌ Challenge list error:', err);
         res.status(500).json({ message: 'Challenge list retrieval failed' });
     }
-}
+};
+
+exports.getInformation = async (req, res) => {
+    const userId = req.user.user_id;
+
+    try {
+        const userInfo = await new Promise((resolve, reject) => {
+            db.get(
+                `SELECT challenge_1_time, challenge_2_time, challenge_3_time FROM user_challenges WHERE user_id = ?`,
+                [userId],
+                (err, row) => {
+                    if (err) reject(err);
+                    else resolve(row);
+                }
+            );
+        });
+
+        if (!userInfo) {
+            return res.status(404).json({ message: 'User challenge data not found' });
+        }
+
+        res.status(200).json(userInfo);
+    } catch (err) {
+        console.error('❌ Failed to fetch challenge information:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
