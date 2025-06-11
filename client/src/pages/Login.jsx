@@ -1,3 +1,4 @@
+// src/Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -10,7 +11,6 @@ function Login({ setIsLoggedIn }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-  
     try {
       const res = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",
@@ -23,8 +23,9 @@ function Login({ setIsLoggedIn }) {
       if (!res.ok) {
         setErrorMsg(data.message || "Login failed.");
       } else {
-        localStorage.setItem("username", data.username || data.id);
-        localStorage.setItem("email", data.id);
+        // JWT 토큰과 닉네임 저장
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("nickname", data.user.nickname);
         setIsLoggedIn(true);
         navigate("/");
       }
@@ -36,11 +37,15 @@ function Login({ setIsLoggedIn }) {
   return (
     <div className="fixed inset-0 bg-gray-100 flex justify-center items-center">
       <div className="w-full max-w-xl bg-white p-10 shadow-md rounded">
-        <h1 className="text-3xl font-semibold mb-8 text-center text-black">Login</h1>
+        <h1 className="text-3xl font-semibold mb-8 text-center text-black">
+          Login
+        </h1>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label className="block mb-1 font-medium text-gray-700">Email</label>
+            <label className="block mb-1 font-medium text-gray-700">
+              Email
+            </label>
             <input
               type="email"
               value={id}
@@ -51,7 +56,9 @@ function Login({ setIsLoggedIn }) {
           </div>
 
           <div>
-            <label className="block mb-1 font-medium text-gray-700">Password</label>
+            <label className="block mb-1 font-medium text-gray-700">
+              Password
+            </label>
             <input
               type="password"
               value={password}
