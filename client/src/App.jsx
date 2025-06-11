@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Home from "./pages/home/Home";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import Profile from "./pages/Profile";
-import MyScore from "./pages/MyScore";
+import Register from "./pages/Register/Register";
+import Login from "./pages/Login/Login";
+import Profile from "./pages/Profile/Profile";
+import MyScore from "./pages/Myscore/MyScore";
 import Scoreboard from "./pages/scoreboard/Scoreboard";
 
 export default function App() {
