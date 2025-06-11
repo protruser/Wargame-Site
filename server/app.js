@@ -16,9 +16,9 @@ const port = process.env.PORT || 3000;
 // ✅ Define allowed origins for CORS
 const allowedOrigins = [
     'http://localhost:5173',
-    'http://localhost:3001',
-    'http://localhost:3002',
-    'http://localhost:3003',
+    'http://localhost:9001',
+    'http://localhost:9002',
+    'http://localhost:9003',
 ];
 
 // ✅ CORS middleware with dynamic origin checking
