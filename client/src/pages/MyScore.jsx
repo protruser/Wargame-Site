@@ -1,23 +1,41 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Chart from "react-apexcharts";
 
 function MyScore() {
-  const nickname = localStorage.getItem("nickname");
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   const [userData, setUserData] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
 
-    fetch("http://localhost:3000/api/user/statistics")
-      .then((res) => res.json())
+    fetch("http://localhost:3000/api/my_score", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (res.status === 401) throw new Error("Unauthorized");
+        if (!res.ok) throw new Error("Failed to fetch statistics");
+        return res.json();
+      })
       .then((data) => {
-        const me = data.data.find((u) => u.nickname === nickname);
-        setUserData(me);
+        setUserData(data); // 서버가 바로 내 정보만 주는 경우
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Failed to load data");
+        localStorage.clear();
+        navigate("/login");
       });
-  }, [nickname]);
+  }, [token, navigate]);
 
+  if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
   if (!userData) return <p className="text-center mt-10">Loading...</p>;
 
-  const { rank, total_score, success_rate, points } = userData;
+  const { nickname, rank, total_score, success_rate = 0, points } = userData;
 
   const chartData = {
     series: [{
@@ -51,7 +69,7 @@ function MyScore() {
                 labels: ["Success", "Fail"],
                 colors: ["#10b981", "#ef4444"],
               }}
-              series={[Number(success_rate), 100 - success_rate]}
+              series={[Number(success_rate), 100 - Number(success_rate)]}
               type="donut"
               width={300}
             />
@@ -96,3 +114,4 @@ function MyScore() {
 }
 
 export default MyScore;
+
