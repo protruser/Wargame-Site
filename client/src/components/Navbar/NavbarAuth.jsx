@@ -1,13 +1,22 @@
 // src/components/Navbar/NavbarAuth.jsx
 import React from "react";
 import { FaSignOutAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export const NavbarAuth = ({ setIsLoggedIn }) => {
+  const navigate = useNavigate();
+
   const handleLogout = () => {
+    // 모든 인증 관련 정보 제거
+    localStorage.removeItem("token");
     localStorage.removeItem("nickname");
     localStorage.removeItem("id");
+
+    // 상태 업데이트
     setIsLoggedIn(false);
-    window.location.href = "/";
+
+    // 페이지 이동
+    navigate("/login");
   };
 
   return (
