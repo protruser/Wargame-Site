@@ -112,4 +112,4 @@ exports.deleteAccount = (req, res) => {
             });
         });
     });
-};
+}
