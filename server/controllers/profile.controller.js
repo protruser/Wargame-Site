@@ -2,10 +2,21 @@ const profileService = require('../services/profile.service');
 const { comparePassword, hashPassword } = require('../utils/hash');
 
 exports.loadProfile = async (req, res) => {
-    const { id, nickname } = req.body;
-    res.json({ id, nickname });
-};
+    const id = req.user.user_id;
 
+    try {
+        const user = await profileService.findById(id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        res.json({
+            id: user.user_id,
+            nickname: user.nickname,
+        });
+    } catch (err) {
+        console.error('❌ Failed to load profile:', err);
+        res.status(500).json({ error: 'Failed to load profile' });
+    }
+};
 
 exports.updatePassword = async (req, res) => {
     const { password, newPassword } = req.body;
@@ -28,4 +39,3 @@ exports.updatePassword = async (req, res) => {
         res.status(500).json({ error: 'Password update failed' });
     }
 };
-
