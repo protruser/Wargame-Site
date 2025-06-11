@@ -1,24 +1,40 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import authFetch from "../utils/authFetch";
 
-function Profile() {
+function Profile({ setIsLoggedIn }) {
   const [nickname, setUsername] = useState("loading...");
   const [id, setEmail] = useState("loading...");
-  const [password, setCurrentPassword] = useState("");
+  const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/profile", {
-      method: "GET",
-      credentials: "include",
+    // 여기서 POST 방식으로 프로필 요청
+    authFetch("http://localhost:3000/api/profile", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: localStorage.getItem("userId") }) // 예: localStorage에서 userId 가져옴
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 401) throw new Error("Unauthorized");
+        return res.json();
+      })
       .then((data) => {
         setUsername(data.nickname);
         setEmail(data.id);
+      })
+      .catch(() => {
+        localStorage.clear();
+        setIsLoggedIn(false);
+        navigate("/login");
       });
-  }, []);
+  }, [navigate, setIsLoggedIn]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,21 +47,51 @@ function Profile() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/api/profile/password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ id, password, newPassword }),
-      });
+      const res = await authFetch(
+        "http://localhost:3000/api/profile/password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, password, newPassword }),
+        }
+      );
 
       const data = await res.json();
-
       if (!res.ok) {
+        if (res.status === 401) throw new Error("Unauthorized");
         setError(data.message || "Password update failed.");
       } else {
         setSuccess("Password updated successfully.");
-        setCurrentPassword("");
+        setPassword("");
         setNewPassword("");
+      }
+    } catch (err) {
+      if (err.message === "Unauthorized") {
+        localStorage.clear();
+        setIsLoggedIn(false);
+        navigate("/login");
+      } else {
+        setError("Server error. Try again later.");
+      }
+    }
+  };
+
+  const handleDelete = async () => {
+    setError("");
+    setSuccess("");
+
+    if (!window.confirm("Are you sure you want to delete your account?")) return;
+
+    try {
+      const res = await authFetch(`http://localhost:3000/api/users/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.message || "Account deletion failed.");
+      } else {
+        setShowModal(true); // 탈퇴 성공 → 모달 표시
       }
     } catch (err) {
       setError("Server error. Try again later.");
@@ -55,12 +101,14 @@ function Profile() {
   return (
     <div className="fixed inset-0 bg-gray-100 flex justify-center items-center">
       <div className="w-full max-w-xl bg-white p-10 shadow-md rounded">
-        <h1 className="text-3xl font-semibold mb-8 text-center text-black">Profile</h1>
-
+        <h1 className="text-3xl font-semibold mb-8 text-center text-black">
+          Profile
+        </h1>
         <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* Username */}
           <div>
-            <label className="block mb-1 font-medium text-gray-700">Username</label>
+            <label className="block mb-1 font-medium text-gray-700">
+              Username
+            </label>
             <input
               type="text"
               value={nickname}
@@ -68,10 +116,10 @@ function Profile() {
               className="w-full bg-gray-200 px-4 py-2 rounded text-black cursor-not-allowed"
             />
           </div>
-
-          {/* Email */}
           <div>
-            <label className="block mb-1 font-medium text-gray-700">Email</label>
+            <label className="block mb-1 font-medium text-gray-700">
+              Email
+            </label>
             <input
               type="email"
               value={id}
@@ -79,22 +127,22 @@ function Profile() {
               className="w-full bg-gray-200 px-4 py-2 rounded text-black cursor-not-allowed"
             />
           </div>
-
-          {/* Current Password */}
           <div>
-            <label className="block mb-1 font-medium text-gray-700">Current Password</label>
+            <label className="block mb-1 font-medium text-gray-700">
+              Current Password
+            </label>
             <input
               type="password"
               value={password}
-              onChange={(e) => setCurrentPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter current password"
               className="w-full bg-gray-200 px-4 py-2 rounded text-black"
             />
           </div>
-
-          {/* New Password */}
           <div>
-            <label className="block mb-1 font-medium text-gray-700">New Password</label>
+            <label className="block mb-1 font-medium text-gray-700">
+              New Password
+            </label>
             <input
               type="password"
               value={newPassword}
@@ -103,21 +151,42 @@ function Profile() {
               className="w-full bg-gray-200 px-4 py-2 rounded text-black"
             />
           </div>
-
-          {/* Error or success message */}
           {error && <p className="text-red-500 text-sm">{error}</p>}
           {success && <p className="text-green-600 text-sm">{success}</p>}
-
-          <div className="flex justify-end">
+          <div className="flex justify-between items-center">
             <button
               type="submit"
               className="bg-gray-300 text-black px-6 py-2 rounded hover:bg-gray-400"
             >
               Update Password
             </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600"
+            >
+              Delete Account
+            </button>
           </div>
         </form>
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-md max-w-sm w-full">
+            <h2 className="text-xl font-semibold mb-4 text-black">Account Deleted</h2>
+            <p className="text-gray-700 mb-4">Your account has been successfully deleted.</p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowModal(false)}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
