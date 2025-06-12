@@ -44,7 +44,7 @@ export default function FeatureList() {
       {
         root: null,
         rootMargin: "0px",
-        threshold: 0.5,
+        threshold: 0.3,
       }
     );
     itemRefs.current.forEach((el) => el && observer.observe(el));
@@ -56,31 +56,38 @@ export default function FeatureList() {
       <h2 className="text-3xl font-bold text-center text-teal-800 mb-12">
         🔍 Key Features
       </h2>
-      <div className="space-y-16 max-w-3xl mx-auto px-4">
+      <div
+        className="lg:space-y-16 space-y-10 max-w-3xl mx-auto px-4 flex flex-col items-center"
+        role="list"
+      >
         {features.map((feat, idx) => {
           const isActive = idx === activeIndex;
           return (
             <div
               key={idx}
               data-index={idx}
+              role="listitem"
+              aria-current={isActive ? "true" : undefined}
               ref={(el) => (itemRefs.current[idx] = el)}
               className={`
-                p-6 rounded-xl transition-all duration-500
+                p-8 rounded-xl min-h-[320px] w-full
+                flex flex-col justify-center items-center text-center
+                transition-transform transition-opacity transition-shadow duration-700 ease-out
                 ${
                   isActive
-                    ? "bg-teal-50 shadow-lg scale-105 opacity-100"
+                    ? "bg-emerald-100 shadow-xl scale-105 opacity-100 hover:scale-[1.02] border-l-4 border-emerald-400"
                     : "bg-gray-100 opacity-50 scale-95"
                 }
               `}
             >
               <h3
-                className={`text-2xl font-semibold mb-2 transition-colors duration-500 ${
+                className={`text-3xl font-bold mb-4 transition-colors duration-500 ${
                   isActive ? "text-teal-800" : "text-gray-600"
                 }`}
               >
                 {feat.title}
               </h3>
-              <p className="text-gray-700">{feat.description}</p>
+              <p className="text-lg text-gray-700">{feat.description}</p>
             </div>
           );
         })}

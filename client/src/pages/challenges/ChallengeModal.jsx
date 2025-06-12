@@ -1,4 +1,3 @@
-// src/pages/challenges/ChallengeModal.jsx
 import React, { useState } from "react";
 import authFetch from "../../utils/authFetch";
 
@@ -22,12 +21,7 @@ export default function ChallengeModal({ challenge, onClose }) {
         }
       );
 
-      // 먼저 raw JSON을 로그로 찍어 봅시다
       const data = await res.json();
-      console.log("🏷 Server response data:", data);
-
-      // 그리고 서버가 보내준 'message'를 그대로 화면에 띄워 보세요
-      // 예: data.message 가 "정답입니다" 또는 "오답입니다"라면
       setMsg(data.message);
     } catch (err) {
       console.error("Submit Exception:", err);
@@ -35,12 +29,18 @@ export default function ChallengeModal({ challenge, onClose }) {
     }
   };
 
+  const handleClose = () => {
+    // 창 닫기 전에 새로고침
+    window.location.reload();
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="bg-gray-800 w-full max-w-lg p-6 rounded shadow relative">
         <button
           className="absolute top-3 right-3 text-gray-400 hover:text-white"
-          onClick={onClose}
+          onClick={handleClose}
         >
           ✕
         </button>
@@ -66,9 +66,14 @@ export default function ChallengeModal({ challenge, onClose }) {
           placeholder="FLAG{...}"
           className="w-full p-2 rounded bg-gray-700 text-white mb-3"
         />
+
         <button
           onClick={submitFlag}
-          className="w-full py-2 bg-teal-600 hover:bg-teal-700 rounded"
+          className={`w-full py-2 rounded transition ${
+            msg === "Correct!"
+              ? "bg-green-600 hover:bg-green-700"
+              : "bg-teal-600 hover:bg-teal-700"
+          }`}
         >
           Submit Flag
         </button>
