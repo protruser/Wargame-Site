@@ -4,13 +4,14 @@ import { motion } from "framer-motion";
 export default function ChallengeCard({ data, solved, onClick }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
       onClick={onClick}
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
       className={`
         cursor-pointer p-4 rounded-lg shadow
-        transition hover:-translate-y-1
         ${solved ? "bg-teal-700/40" : "bg-gray-800 hover:bg-gray-700"}
         flex flex-col justify-between
         aspect-square

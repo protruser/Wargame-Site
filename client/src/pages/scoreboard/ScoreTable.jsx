@@ -20,7 +20,7 @@ export default function ScoreTable({ rows }) {
             <tr
               key={row.rank}
               className="border-b border-gray-700 hover:bg-gray-700 cursor-pointer transition-colors"
-              onClick={() => navigate(`/profile/${row.username}`)}
+              onClick={() => navigate(`/myscore/${row.username}`)}
             >
               <td className="p-3 font-mono text-gray-100">{row.rank}</td>
               <td className="p-3 text-teal-300 hover:underline">
