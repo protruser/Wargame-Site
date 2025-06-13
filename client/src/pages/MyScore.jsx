@@ -145,7 +145,7 @@ function MyScore() {
                   colors: ["#10b981", "#ef4444"],
                   legend: {
                     labels: {
-                      colors: ["#E5E7EB"],
+                      colors: ["#E5E7EB","#E5E7EB"],
                     },
                   },
                 }}
