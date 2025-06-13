@@ -20,10 +20,9 @@ export default function ScoreChart({ data }) {
     new Set(top10.flatMap((u) => u.points.map((p) => p.timestamp)))
   ).sort((a, b) => new Date(a) - new Date(b));
 
-  // 3) 유저별 누적 점수 맵 생성
+  // 3) 유저별 누적 점수 맵 생성 + 보간
   const userCumMap = {};
   top10.forEach((user) => {
-    // iso 문자열 정렬
     const sorted = [...user.points].sort(
       (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
     );
@@ -33,14 +32,25 @@ export default function ScoreChart({ data }) {
       cum += p.score;
       map[p.timestamp] = cum;
     });
-    userCumMap[user.username] = map;
+
+    // 시간 보간: 이후 시점에도 이전 점수를 유지
+    let lastScore = 0;
+    const fullMap = {};
+    allTimestamps.forEach((ts) => {
+      if (map[ts] != null) {
+        lastScore = map[ts];
+      }
+      fullMap[ts] = lastScore;
+    });
+
+    userCumMap[user.username] = fullMap;
   });
 
   // 4) 차트용 데이터 생성
   const chartData = allTimestamps.map((ts) => {
     const row = { timestamp: ts };
     top10.forEach((user) => {
-      row[user.username] = userCumMap[user.username][ts] ?? null;
+      row[user.username] = userCumMap[user.username][ts];
     });
     return row;
   });
@@ -107,7 +117,6 @@ export default function ScoreChart({ data }) {
                 stroke={colors[idx]}
                 dot={false}
                 strokeWidth={2}
-                connectNulls
               />
             ))}
           </LineChart>
