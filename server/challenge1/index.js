@@ -50,7 +50,7 @@ app.post('/challenge1-login', (req, res) => {
     const { userid, userPassword } = req.body;
 
     if (userid === ID && userPassword === PASSWORD) {
-        res.cookie('sessionId', crypto.randomBytes(8).toString('hex'), { httpOnly: false });
+        res.cookie('sessionId', crypto.randomBytes(8).toString('hex'), { httpOnly: false, maxAge: 30000 });
         return res.redirect('/');
     }
 
