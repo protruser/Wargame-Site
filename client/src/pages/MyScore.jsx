@@ -51,7 +51,7 @@ function MyScore() {
   const { nickname, rank, total_score, success_rate = 0, points } = userData;
 
   const sortedPoints = [...points].sort(
-    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
   );
 
   const chartData = {
@@ -59,15 +59,29 @@ function MyScore() {
       {
         name: "Total Score",
         data: sortedPoints.map((p, i) => {
-          const sum = sortedPoints.slice(0, i + 1).reduce((acc, cur) => acc + cur.score, 0);
-          return { x: new Date(p.timestamp), y: sum };
+          const sum = sortedPoints
+            .slice(0, i + 1)
+            .reduce((acc, cur) => acc + cur.score, 0);
+          return { x: new Date(p.timestamp).getTime(), y: sum };
         }),
       },
     ],
     options: {
       chart: {
         type: "area",
-        toolbar: { show: true },
+        toolbar: {
+          show: true,
+          tools: {
+            download: false,
+            selection: false,
+            zoom: false,
+            zoomin: true,
+            zoomout: true,
+            pan: false,
+            reset: false,
+            customIcons: [],
+          },
+        },
         zoom: { enabled: true },
         foreColor: "#E5E7EB",
       },
@@ -76,6 +90,7 @@ function MyScore() {
         datetimeUTC: false,
         labels: {
           style: { colors: "#E5E7EB" },
+          format: "yyyy-MM-dd HH:mm:ss",
         },
         tooltip: { enabled: true },
       },
@@ -84,6 +99,9 @@ function MyScore() {
       },
       tooltip: {
         theme: "dark",
+        x: {
+          format: "yyyy-MM-dd HH:mm:ss",
+        },
       },
       dataLabels: { enabled: false },
       stroke: {
