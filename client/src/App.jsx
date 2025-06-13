@@ -46,6 +46,7 @@ export default function App() {
         <Route path="/myscore" element={<MyScore />} />
         <Route path="/scoreboard" element={<Scoreboard />} />
         <Route path="/challenges" element={<Challenges />} />
+        <Route path="/myscore/:nickname" element={<MyScore />} />
       </Routes>
     </BrowserRouter>
   );
