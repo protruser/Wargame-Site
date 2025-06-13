@@ -21,7 +21,7 @@ export const NavbarAuth = ({ setIsLoggedIn }) => {
     localStorage.removeItem("nickname");
     localStorage.removeItem("id");
     setIsLoggedIn(false);
-    navigate("/login");
+    navigate("/");
   };
 
   return (
