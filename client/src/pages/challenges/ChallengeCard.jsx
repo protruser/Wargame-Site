@@ -20,7 +20,7 @@ export default function ChallengeCard({ data, solved, onClick }) {
     >
       <div>
         <h2 className="text-lg font-semibold mb-2">{data.title}</h2>
-        <p className="text-gray-400 text-sm line-clamp-2">{data.description}</p>
+        <p className="text-gray-400 text-sm line-clamp-5">{data.description}</p>
       </div>
 
       <div className="mt-4 flex justify-between items-center">
