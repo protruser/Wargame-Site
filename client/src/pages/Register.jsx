@@ -32,47 +32,49 @@ function Register() {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-100 flex justify-center items-center">
-      <div className="w-full max-w-xl bg-white p-10 shadow-md rounded">
-        <h1 className="text-3xl font-semibold mb-8 mt-8 text-center text-black border-b pb-4">Register</h1>
+    <div className="fixed inset-0 bg-gray-900 flex justify-center items-center px-4">
+      <div className="w-full max-w-xl bg-gray-800 p-10 shadow-md rounded-xl">
+        <h1 className="text-3xl font-semibold mb-8 mt-4 text-center text-white border-b border-gray-600 pb-4">
+          Register
+        </h1>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label className="block mb-1 font-medium text-gray-700">Username</label>
+            <label className="block mb-1 font-medium text-gray-300">Username</label>
             <input
               type="text"
               value={nickname}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter username"
-              className="w-full bg-gray-200 px-4 py-2 rounded text-black"
+              className="w-full bg-gray-700 px-4 py-2 rounded text-white"
             />
-            <p className="text-sm text-gray-500 mt-1">your username on the site</p>
+            <p className="text-sm text-gray-400 mt-1">your username on the site</p>
           </div>
 
           <div>
-            <label className="block mb-1 font-medium text-gray-700">Email</label>
+            <label className="block mb-1 font-medium text-gray-300">Email</label>
             <input
               type="email"
               value={id}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter email"
-              className="w-full bg-gray-200 px-4 py-2 rounded text-black"
+              className="w-full bg-gray-700 px-4 py-2 rounded text-white"
             />
-            <p className="text-sm text-gray-500 mt-1">
-              Email must include "@" and a domain
+            <p className="text-sm text-gray-400 mt-1">
+              Email must include "@seoultech.ac.kr"
             </p>
           </div>
 
           <div>
-            <label className="block mb-1 font-medium text-gray-700">Password</label>
+            <label className="block mb-1 font-medium text-gray-300">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password"
-              className="w-full bg-gray-200 px-4 py-2 rounded text-black"
+              className="w-full bg-gray-700 px-4 py-2 rounded text-white"
             />
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-400 mt-1">
               At least 8 characters, include number, uppercase, lowercase, and special character
             </p>
           </div>
@@ -82,7 +84,7 @@ function Register() {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="bg-gray-300 text-black px-6 py-2 rounded hover:bg-gray-400"
+              className="bg-teal-500 text-white px-6 py-2 rounded hover:bg-teal-600"
             >
               Register
             </button>
