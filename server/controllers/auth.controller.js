@@ -3,7 +3,7 @@ const { findUserById, findUserByNickname, createUser, createUserChallenge } = re
 const register = async (req, res) => {
     const { id, nickname, password } = req.body;
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@seoultech\.ac\.kr$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*-_,./])[A-Za-z\d!@#$%^&*-_./]{8,}$/;
 
     try {
