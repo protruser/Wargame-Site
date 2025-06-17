@@ -1,6 +1,5 @@
 const myScoreService = require("../services/myscore.service");
 
-// 📌 닉네임으로 특정 유저의 점수를 불러오는 API (scoreboard에서 클릭)
 exports.getScoreByNickname = async (req, res) => {
   const nickname = req.params.nickname;
 
@@ -18,7 +17,6 @@ exports.getScoreByNickname = async (req, res) => {
 exports.getMyScore = async (req, res) => {
   const nickname = req.user.nickname;
   console.log("✅ req.user:", req.user);
-
 
   try {
     const score = await myScoreService.findScoreByNickname(nickname);
