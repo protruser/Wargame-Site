@@ -65,7 +65,7 @@ Users can even view other users' challenge pool records.
 
 ---
 
-## ⚙️ 기술 스택
+## ⚙️ Tech Stack
 
 ### Backend
 - Node.js / Express / REST API
