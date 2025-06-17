@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Home from "./pages/home/Home";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import Profile from "./pages/Profile";
-import MyScore from "./pages/MyScore";
+import Register from "./pages/register/Register";
+import Login from "./pages/login/Login";
+import Profile from "./pages/profile/Profile";
+import MyScore from "./pages/myscore/MyScore";
 import Scoreboard from "./pages/scoreboard/Scoreboard";
 import Challenges from "./pages/challenges/Challenges";
 
