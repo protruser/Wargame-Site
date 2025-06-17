@@ -1,26 +1,26 @@
 const db = require('../config/db');
 
-exports.addUser = (req, res) => {
-    const { user_id, nickname, password } = req.body;
+// exports.addUser = (req, res) => {
+//     const { user_id, nickname, password } = req.body;
 
-    const userInsert = `
-    INSERT INTO users (user_id, nickname, password, total_score)
-    VALUES (?, ?, ?, 0)
-  `;
-    const userChallengesInsert = `INSERT INTO user_challenges (user_id) VALUES (?)`;
+//     const userInsert = `
+//     INSERT INTO users (user_id, nickname, password, total_score)
+//     VALUES (?, ?, ?, 0)
+//   `;
+//     const userChallengesInsert = `INSERT INTO user_challenges (user_id) VALUES (?)`;
 
-    db.run(userInsert, [user_id, nickname, password], (err) => {
-        if (err) {
-            return res.status(500).json({ error: 'User insert failed', details: err.message });
-        }
-        db.run(userChallengesInsert, [user_id], (err) => {
-            if (err) {
-                return res.status(500).json({ error: 'user_challenges insert failed', details: err.message });
-            }
-            res.json({ message: 'User added successfully' });
-        });
-    });
-};
+//     db.run(userInsert, [user_id, nickname, password], (err) => {
+//         if (err) {
+//             return res.status(500).json({ error: 'User insert failed', details: err.message });
+//         }
+//         db.run(userChallengesInsert, [user_id], (err) => {
+//             if (err) {
+//                 return res.status(500).json({ error: 'user_challenges insert failed', details: err.message });
+//             }
+//             res.json({ message: 'User added successfully' });
+//         });
+//     });
+// };
 
 exports.getStatistics = (req, res) => {
     const getUserStatsQuery = `
@@ -92,24 +92,3 @@ exports.getStatistics = (req, res) => {
         });
     });
 };
-
-exports.deleteAccount = (req, res) => {
-    const tokenUserId = req.user.user_id;
-    const paramUserId = req.params.user_id;
-
-    if (tokenUserId !== paramUserId) {
-        return res.status(403).json({ error: '🚫 You are not authorized to delete this account' });
-    }
-
-    db.serialize(() => {
-        db.run(`DELETE FROM user_challenges WHERE user_id = ?`, [paramUserId], function (err) {
-            if (err) return res.status(500).json({ error: '❌ Failed to delete challenge data' });
-
-            db.run(`DELETE FROM users WHERE user_id = ?`, [paramUserId], function (err) {
-                if (err) return res.status(500).json({ error: '❌ Failed to delete user' });
-
-                return res.json({ message: '✅ Account deleted successfully' });
-            });
-        });
-    });
-}
