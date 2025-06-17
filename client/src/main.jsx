@@ -1,19 +1,20 @@
 // src/main.jsx
-import { StrictMode, useEffect } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 
-// AOS 불러오기
+// Import and configure AOS (Animate On Scroll) library
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-// AOS 초기화
+// Initialize AOS with animation settings
 AOS.init({
-  duration: 800,
-  once: true,
+  duration: 800, // Animation duration in ms
+  once: true, // Trigger animation only once
 });
 
+// Mount the React application into the DOM
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <App />
