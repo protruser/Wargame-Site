@@ -22,10 +22,10 @@ db.serialize(() => {
     ];
 
     const challenges = [
-        ['Minhyuk', 1749803606075, 0, 0, 1, 6],
-        ['Suyong', 0, 0, 0, 0, 4],
-        ['Inyong', 0, 1749803506075, 0, 1, 1],
-        ['Minseo', 1749803605075, 0, 0, 1, 3],
+        ['21102049@seoultech.ac.kr', 1749803606075, 0, 0, 1, 6],
+        ['21102043@seoultech.ac.kr', 0, 0, 0, 0, 4],
+        ['21102060@seoultech.ac.kr', 0, 1749803506075, 0, 1, 1],
+        ['22101990@seoultech.ac.kr', 1749803605075, 0, 0, 1, 3],
     ];
 
     users.forEach((u) => insertUsers.run(...u));
