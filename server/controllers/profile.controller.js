@@ -1,5 +1,6 @@
 const profileService = require('../services/profile.service');
 const { comparePassword, hashPassword } = require('../utils/hash');
+const db = require('../config/db');
 
 exports.loadProfile = async (req, res) => {
     const id = req.user.user_id;
@@ -38,4 +39,25 @@ exports.updatePassword = async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Password update failed' });
     }
+};
+
+exports.deleteAccount = (req, res) => {
+    const tokenUserId = req.user.user_id;
+    const paramUserId = req.params.user_id;
+
+    if (tokenUserId !== paramUserId) {
+        return res.status(403).json({ error: '🚫 You are not authorized to delete this account' });
+    }
+
+    db.serialize(() => {
+        db.run(`DELETE FROM user_challenges WHERE user_id = ?`, [paramUserId], function (err) {
+            if (err) return res.status(500).json({ error: '❌ Failed to delete challenge data' });
+
+            db.run(`DELETE FROM users WHERE user_id = ?`, [paramUserId], function (err) {
+                if (err) return res.status(500).json({ error: '❌ Failed to delete user' });
+
+                return res.json({ message: '✅ Account deleted successfully' });
+            });
+        });
+    });
 };
