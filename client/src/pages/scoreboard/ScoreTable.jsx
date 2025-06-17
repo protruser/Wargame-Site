@@ -2,8 +2,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
+// ScoreTable component: renders the scoreboard table with rank, username, and score
 export default function ScoreTable({ rows }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Hook to programmatically navigate to user's MyScore page
 
   return (
     <div className="overflow-x-auto w-full">
@@ -20,13 +21,16 @@ export default function ScoreTable({ rows }) {
             <tr
               key={row.rank}
               className="border-b border-gray-700 hover:bg-gray-700 cursor-pointer transition-colors"
-              onClick={() => navigate(`/myscore/${row.username}`)}
+              onClick={() => navigate(`/myscore/${row.username}`)} // Navigate to user detail page on click
             >
-              <td className="p-3 font-mono text-gray-100">{row.rank}</td>
+              <td className="p-3 font-mono text-gray-100">{row.rank}</td>{" "}
+              {/* User's rank */}
               <td className="p-3 text-teal-300 hover:underline">
                 {row.username}
-              </td>
-              <td className="p-3 text-gray-100">{row.total_score}</td>
+              </td>{" "}
+              {/* Username with hover effect */}
+              <td className="p-3 text-gray-100">{row.total_score}</td>{" "}
+              {/* Total score */}
             </tr>
           ))}
         </tbody>

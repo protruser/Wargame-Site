@@ -3,13 +3,14 @@ import React, { useEffect, useState } from "react";
 import ScoreChart from "./ScoreChart";
 import ScoreTable from "./ScoreTable";
 
+// Scoreboard component: Displays user statistics via chart and table
 export default function Scoreboard() {
-  const [rawData, setRawData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [rawData, setRawData] = useState(null); // Data fetched from API
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
 
   useEffect(() => {
-    // Vite 프록시를 사용하지 않으므로 절대 경로
+    // Fetch user statistics from backend
     fetch("http://localhost:3000/api/user/statistics")
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -26,11 +27,14 @@ export default function Scoreboard() {
       });
   }, []);
 
+  // Show loading indicator
   if (loading) {
     return (
       <div className="pt-[60px] p-8 text-center text-gray-200">Loading…</div>
     );
   }
+
+  // Show error message
   if (error) {
     return (
       <div className="pt-[60px] p-8 text-center text-red-500">
@@ -40,23 +44,20 @@ export default function Scoreboard() {
   }
 
   return (
-    // ① flex-none: body가 flex 여도 메인 컨테이너가 축소되지 않도록
-    // ② w-screen: 가급적 화면 전체 너비(100vw)를 차지하도록
-    // ③ ml-0 (또는 left-0) 과 같은 margin/offset을 줘서 좌측 정렬을 명시
     <main className="pt-[60px] flex-none w-screen ml-0 bg-gray-900 text-white min-h-screen">
-      {/* ─── 페이지 상단 타이틀 ─────────────────────────────── */}
+      {/* Page title */}
       <header className="py-8 text-center text-3xl font-semibold">
         Scoreboard
       </header>
 
-      {/* ─── 콘텐츠 영역 (가로 100%) ──────────────────────── */}
+      {/* Main content section */}
       <div className="w-full space-y-12 px-4">
-        {/* ─ 차트: 부모가 w-full 이므로 화면 전체 폭을 차지합니다 ─ */}
+        {/* Chart section */}
         <div className="w-full">
           <ScoreChart data={rawData} />
         </div>
 
-        {/* ─ 테이블: 부모가 w-full 이므로 화면 전체 폭을 차지합니다 ─ */}
+        {/* Table section */}
         <div className="w-full">
           <ScoreTable rows={rawData} />
         </div>
