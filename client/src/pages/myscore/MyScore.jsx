@@ -58,7 +58,7 @@ export default function MyScore() {
         {/* User header info */}
         <h2 className="text-3xl font-bold text-center mb-4">{nickname}</h2>
         <p className="text-center text-lg mb-6">
-          <span className="font-bold">{rank}위</span> / {total_score}점
+          <span className="font-bold">#{rank}</span> &middot; {total_score} pts
         </p>
 
         {points.length === 0 ? (
